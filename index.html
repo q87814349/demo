@@ -77,7 +77,7 @@
             color: #00ff00;
             padding: 15px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-top: 20px;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
             min-width: 150px;
         }
@@ -208,11 +208,6 @@
             <canvas id="gameCanvas" width="300" height="300"></canvas>
             
             <div id="gameControls">
-                <div id="gameScore">
-                    <div id="score">得分: 0</div>
-                    <button id="startBtn">开始游戏</button>
-                </div>
-                
                 <div class="controls-container">
                     <div class="controls">
                         <button id="up" class="control-btn" onclick="changeDirectionByButton('up')">↑</button>
@@ -220,6 +215,10 @@
                         <button id="right" class="control-btn" onclick="changeDirectionByButton('right')">→</button>
                         <button id="down" class="control-btn" onclick="changeDirectionByButton('down')">↓</button>
                     </div>
+                </div>
+                <div id="gameScore">
+                    <div id="score">得分: 0</div>
+                    <button id="startBtn">开始游戏</button>
                 </div>
             </div>
         </div>
