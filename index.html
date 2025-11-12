@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏机风格贪吃蛇</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #2d2d2d;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+        }
+
+        /* 游戏机外壳 */
+        .game-console {
+            background-color: #b22222;
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            border: 8px solid #8b0000;
+        }
+
+        /* 游戏机顶部装饰 */
+        .console-top {
+            height: 20px;
+            background-color: #8b0000;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -20px 20px;
+            box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 游戏标题 */
+        .console-title {
+            color: #ffd700;
+            text-align: center;
+            font-size: 24px;
+            margin: 0 0 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .game-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* 游戏屏幕 */
+        #gameCanvas {
+            border: 15px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 0 0 5px #1a1a1a,
+                        inset 0 0 10px rgba(0, 0, 0, 0.5);
+            background-color: #111;
+        }
+
+        #gameControls {
+            text-align: center;
+            padding: 10px;
+        }
+
+        #gameScore {
+            background-color: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
+            min-width: 150px;
+        }
+
+        #score {
+            font-size: 22px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        #startBtn {
+            font-size: 16px;
+            padding: 10px 20px;
+            background-color: #444;
+            color: #fff;
+            border: 4px solid #666;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 4px 0 #222,
+                        inset 0 2px 3px rgba(255, 255, 255, 0.2);
+        }
+
+        #startBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #222,
+                        inset 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 方向键控制区 */
+        .controls-container {
+            background-color: #444;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 0 #222,
+                        inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 160px;
+            margin: 0 auto;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            background-color: #333;
+            color: #ccc;
+            border: 3px solid #666;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 0 #222,
+                        inset 0 2px 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .control-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #222,
+                        inset 0 2px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        #up {
+            grid-column: 2;
+        }
+
+        #left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        #right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        #down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        /* 游戏机底部装饰 */
+        .console-bottom {
+            height: 15px;
+            background-color: #8b0000;
+            border-radius: 0 0 10px 10px;
+            margin: 20px -20px -30px;
+            box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 游戏机侧面按钮 */
+        .console-sides {
+            position: absolute;
+            top: 50%;
+            left: -15px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .side-btn {
+            width: 10px;
+            height: 30px;
+            background-color: #8b0000;
+            border-radius: 3px 0 0 3px;
+            box-shadow: inset -2px 0 2px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 游戏机外壳 -->
+    <div class="game-console">
+        <div class="console-top"></div>
+        <h1 class="console-title">贪吃蛇</h1>
+        
+        <div class="game-container">
+            <canvas id="gameCanvas" width="300" height="300"></canvas>
+            
+            <div id="gameControls">
+                <div id="gameScore">
+                    <div id="score">得分: 0</div>
+                    <button id="startBtn">开始游戏</button>
+                </div>
+                
+                <div class="controls-container">
+                    <div class="controls">
+                        <button id="up" class="control-btn" onclick="changeDirectionByButton('up')">↑</button>
+                        <button id="left" class="control-btn" onclick="changeDirectionByButton('left')">←</button>
+                        <button id="right" class="control-btn" onclick="changeDirectionByButton('right')">→</button>
+                        <button id="down" class="control-btn" onclick="changeDirectionByButton('down')">↓</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="console-sides">
+            <div class="side-btn"></div>
+            <div class="side-btn"></div>
+        </div>
+        
+        <div class="console-bottom"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const startBtn = document.getElementById('startBtn');
+
+        const gridSize = 15;
+        const tileCount = canvas.width / gridSize;
+
+        let snake = [{ x: 10, y: 10 }];
+        let food = { x: 15, y: 15 };
+        let dx = 0;
+        let dy = 0;
+        let score = 0;
+        let gameRunning = false;
+
+        function drawGame() {
+            if (!gameRunning) return;
+
+            clearCanvas();
+            moveSnake();
+            drawSnake();
+            drawFood();
+            checkCollision();
+            updateScore();
+            setTimeout(drawGame, 200);
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = '#0f380f'; // 绿色游戏背景
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function moveSnake() {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                generateFood();
+                score += 10;
+            } else {
+                snake.pop();
+            }
+        }
+
+        function drawSnake() {
+            snake.forEach((segment, index) => {
+                const gradient = ctx.createLinearGradient(
+                    segment.x * gridSize,
+                    segment.y * gridSize,
+                    (segment.x + 1) * gridSize,
+                    (segment.y + 1) * gridSize
+                );
+                gradient.addColorStop(0, '#00ff00');
+                gradient.addColorStop(1, '#008000');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+
+                if (index === 0) {
+                    // 蛇眼
+                    ctx.fillStyle = 'black';
+                    ctx.beginPath();
+                    ctx.arc(segment.x * gridSize + 5, segment.y * gridSize + 5, 2, 0, 2 * Math.PI);
+                    ctx.arc(segment.x * gridSize + 10, segment.y * gridSize + 5, 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            });
+        }
+
+        function drawFood() {
+            const gradient = ctx.createRadialGradient(
+                food.x * gridSize + gridSize / 2,
+                food.y * gridSize + gridSize / 2,
+                2,
+                food.x * gridSize + gridSize / 2,
+                food.y * gridSize + gridSize / 2,
+                gridSize / 2
+            );
+            gradient.addColorStop(0, '#ff0000');
+            gradient.addColorStop(1, '#8b0000');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2, gridSize / 2 - 1, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        function generateFood() {
+            food.x = Math.floor(Math.random() * tileCount);
+            food.y = Math.floor(Math.random() * tileCount);
+        }
+
+        function checkCollision() {
+            const head = snake[0];
+
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                gameOver();
+            }
+
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    gameOver();
+                }
+            }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            startBtn.textContent = '重新开始';
+            startBtn.style.display = 'inline-block';
+            alert(`游戏结束！你的得分是: ${score}`);
+        }
+
+        function updateScore() {
+            scoreElement.textContent = `得分: ${score}`;
+        }
+
+        function resetGame() {
+            snake = [{ x: 10, y: 10 }];
+            food = { x: 15, y: 15 };
+            dx = 0;
+            dy = 0;
+            score = 0;
+            updateScore();
+        }
+
+        document.addEventListener('keydown', changeDirection);
+
+        function changeDirection(event) {
+            const LEFT_KEY = 37;
+            const RIGHT_KEY = 39;
+            const UP_KEY = 38;
+            const DOWN_KEY = 40;
+
+            const keyPressed = event.keyCode;
+
+            const goingUp = dy === -1;
+            const goingDown = dy === 1;
+            const goingRight = dx === 1;
+            const goingLeft = dx === -1;
+
+            if (keyPressed === LEFT_KEY && !goingRight) {
+                dx = -1;
+                dy = 0;
+            }
+
+            if (keyPressed === UP_KEY && !goingDown) {
+                dx = 0;
+                dy = -1;
+            }
+
+            if (keyPressed === RIGHT_KEY && !goingLeft) {
+                dx = 1;
+                dy = 0;
+            }
+
+            if (keyPressed === DOWN_KEY && !goingUp) {
+                dx = 0;
+                dy = 1;
+            }
+        }
+
+        function changeDirectionByButton(direction) {
+            if (direction === 'left' && dx !== 1) {
+                dx = -1;
+                dy = 0;
+            } else if (direction === 'up' && dy !== 1) {
+                dx = 0;
+                dy = -1;
+            } else if (direction === 'down' && dy !== -1) {
+                dx = 0;
+                dy = 1;
+            } else if (direction === 'right' && dx !== -1) {
+                dx = 1;
+                dy = 0;
+            }
+        }
+
+        startBtn.addEventListener('click', () => {
+            resetGame();
+            gameRunning = true;
+            startBtn.style.display = 'none';
+            drawGame();
+        });
+
+        clearCanvas();
+    </script>
+</body>
+
+</html>
